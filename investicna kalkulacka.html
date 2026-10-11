@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moja investičná kalkulačka</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#172033;background:#f4f6fa}
+body{margin:0;padding:18px}.wrap{max-width:760px;margin:auto}.card{background:white;border:1px solid #e1e6ef;border-radius:18px;padding:20px;margin:14px 0;box-shadow:0 3px 14px #14213d0b}
+h1{font-size:1.55rem;margin:.2rem 0}.sub{color:#5e687a;line-height:1.5}.control{margin:20px 0}.head{display:flex;justify-content:space-between;gap:12px;align-items:center;font-weight:650}output{font-variant-numeric:tabular-nums;color:#135e43}input[type=range]{width:100%;margin:14px 0;accent-color:#18785a}.marks{display:flex;justify-content:space-between;color:#697386;font-size:.78rem}.result{background:#edf8f1;border-radius:14px;padding:18px}.big{font-size:2rem;font-weight:800;color:#135e43;margin:4px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mini{background:#f5f7fb;border-radius:12px;padding:13px}.mini span{display:block;color:#697386;font-size:.82rem}.mini strong{font-size:1.15rem;display:block;margin-top:5px}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{text-align:right;padding:10px 5px;border-bottom:1px solid #e6eaf0;font-variant-numeric:tabular-nums}th:first-child,td:first-child{text-align:left}th{color:#5e687a;font-size:.85rem}.note{font-size:.82rem;color:#687386;line-height:1.5}.btn{border:0;background:#176b50;color:white;border-radius:10px;padding:12px 15px;font:inherit;font-weight:650;cursor:pointer}.btn.secondary{background:#e9eef5;color:#172033}.actions{display:flex;gap:10px;flex-wrap:wrap}@media(max-width:480px){body{padding:10px}.card{padding:15px}.big{font-size:1.65rem}.grid{grid-template-columns:1fr 1fr}th,td{font-size:.85rem;padding:9px 2px}}
+</style>
+</head>
+<body><main class="wrap">
+<div class="card">
+<h1>Moja investičná kalkulačka</h1>
+<p class="sub">Dlhodobé investovanie, zložené úročenie a vplyv inflácie. Meníš posuvníky a výsledok sa automaticky prepočíta.</p>
+</div>
+<div class="card">
+<div class="control"><div class="head"><label for="monthly">Mesačný vklad</label><output id="monthlyOut">150 €</output></div><input id="monthly" type="range" min="25" max="1000" step="25" value="150"><div class="marks"><span>25 €</span><span>500 €</span><span>1 000 €</span></div></div>
+<div class="control"><div class="head"><label for="annual">Priemerný ročný výnos</label><output id="annualOut">6 %</output></div><input id="annual" type="range" min="0" max="10" step=".5" value="6"><div class="marks"><span>0 %</span><span>5 %</span><span>10 %</span></div></div>
+<div class="control"><div class="head"><label for="years">Dĺžka investovania</label><output id="yearsOut">40 rokov</output></div><input id="years" type="range" min="5" max="45" step="1" value="40"><div class="marks"><span>5 rokov</span><span>25 rokov</span><span>45 rokov</span></div></div>
+<div class="control"><div class="head"><label for="initial">Počiatočný kapitál</label><output id="initialOut">0 €</output></div><input id="initial" type="range" min="0" max="10000" step="100" value="0"><div class="marks"><span>0 €</span><span>5 000 €</span><span>10 000 €</span></div></div>
+<div class="control"><div class="head"><label for="inflation">Predpokladaná inflácia</label><output id="inflationOut">2,5 %</output></div><input id="inflation" type="range" min="0" max="5" step=".5" value="2.5"><div class="marks"><span>0 %</span><span>2,5 %</span><span>5 %</span></div></div>
+</div>
+<div class="card">
+<div class="result"><div class="sub">Odhadovaná konečná hodnota</div><div id="future" class="big">—</div><div class="sub">Odhad v budúcich eurách</div></div>
+<div class="grid" style="margin-top:12px"><div class="mini"><span>Vklady spolu</span><strong id="paid">—</strong></div><div class="mini"><span>Výnos nad vklady</span><strong id="gain">—</strong></div><div class="mini" style="grid-column:1/-1"><span>Kúpna sila v dnešných eurách</span><strong id="real">—</strong></div></div>
+<h2 style="font-size:1.15rem;margin-top:24px">Porovnanie výnosov</h2>
+<p class="sub">Pri nezmenenom mesačnom vklade a zvolenej dĺžke investovania.</p>
+<table><thead><tr><th>Výnos ročne</th><th>Konečná hodnota</th><th>Dnešná kúpna sila</th></tr></thead><tbody id="scenarios"></tbody></table>
+</div>
+<div class="card">
+<h2 style="font-size:1.1rem">Ako si kalkulačku uložiť alebo poslať</h2>
+<p class="sub">Výpočty fungujú priamo v prehliadači a nepotrebujú účet ani internet. Výsledky si môžeš vytlačiť, uložiť ako PDF alebo skopírovať ako text.</p>
+<div class="actions"><button class="btn" id="btnPrint" type="button">Vytlačiť / uložiť ako PDF</button><button class="btn secondary" id="btnCopy" type="button">Kopírovať výsledky ako text</button></div>
+<p id="copied" class="note" aria-live="polite"></p>
+</div>
+<p class="note">Upozornenie: Ide o matematickú simuláciu, nie o predpoveď ani investičné odporúčanie. Predpokladá rovnomerný výnos, mesačné vklady na konci mesiaca a konštantnú infláciu. Skutočné trhové výnosy kolíšu; výsledky nezaručujú budúcu hodnotu. Výpočet nezohľadňuje dane ani samostatné poplatky, ak nie sú zahrnuté v zadanom výnose.</p>
+</main>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var ids=['monthly','annual','years','initial','inflation'];
+var euro=function(n){return new Intl.NumberFormat('sk-SK',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n)};
+var pct=function(n){return new Intl.NumberFormat('sk-SK',{maximumFractionDigits:1}).format(n)+' %'};
+function calc(rate,months,payment,start){
+ var r=Math.pow(1+rate/100,1/12)-1;
+ return start*Math.pow(1+r,months)+(r===0?payment*months:payment*(Math.pow(1+r,months)-1)/r);
+}
+function update(){
+ var m=+$('monthly').value,a=+$('annual').value,y=+$('years').value,s=+$('initial').value,i=+$('inflation').value,n=y*12;
+ $('monthlyOut').textContent=euro(m);
+ $('annualOut').textContent=pct(a);
+ $('yearsOut').textContent=y+' rokov';
+ $('initialOut').textContent=euro(s);
+ $('inflationOut').textContent=pct(i);
+ var fv=calc(a,n,m,s),paid=s+m*n,real=fv/Math.pow(1+i/100,y);
+ $('future').textContent=euro(fv);
+ $('paid').textContent=euro(paid);
+ $('gain').textContent=euro(fv-paid);
+ $('real').textContent=euro(real);
+ $('scenarios').innerHTML=[4,6,8].map(function(r){
+  var v=calc(r,n,m,s),rv=v/Math.pow(1+i/100,y);
+  return '<tr><td>'+r+' %</td><td>'+euro(v)+'</td><td>'+euro(rv)+'</td></tr>';
+ }).join('');
+}
+function fallback(text){
+ var t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();
+ try{document.execCommand('copy');$('copied').textContent='Výsledky sú skopírované.'}catch(e){$('copied').textContent=text}
+ document.body.removeChild(t);
+}
+function copySummary(){
+ var text='Moja investičná kalkulačka\n'+
+  'Mesačný vklad: '+$('monthly').value+' €\n'+
+  'Ročný výnos: '+$('annual').value+' %\n'+
+  'Dĺžka: '+$('years').value+' rokov\n'+
+  'Počiatočný kapitál: '+$('initial').value+' €\n'+
+  'Inflácia: '+$('inflation').value+' %\n'+
+  'Odhadovaná hodnota: '+$('future').textContent+'\n'+
+  'Vklady spolu: '+$('paid').textContent+'\n'+
+  'Výnos nad vklady: '+$('gain').textContent+'\n'+
+  'Kúpna sila v dnešných eurách: '+$('real').textContent+'\n'+
+  'Poznámka: matematický model, nie garancia výnosu.';
+ if(navigator.clipboard&&navigator.clipboard.writeText){
+  navigator.clipboard.writeText(text).then(function(){$('copied').textContent='Výsledky sú skopírované.'}).catch(function(){fallback(text)});
+ }else fallback(text);
+}
+ids.forEach(function(id){
+ var el=$(id);
+ el.addEventListener('input',update);
+ el.addEventListener('change',update);
+});
+$('btnPrint').addEventListener('click',function(){window.print()});
+$('btnCopy').addEventListener('click',copySummary);
+update();
+})();
+</script></body></html>
